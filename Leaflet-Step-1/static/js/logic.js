@@ -12,10 +12,10 @@ function createMap(bikeStations) {
     
   
     // Create a baseMaps object to hold the lightmap layer
-    var baseMaps = {"Light Map": lightmap};
+    var baseMaps = {"Street Map": lightmap};
   
     // Create an overlayMaps object to hold the bikeStations layer
-    var overlayMaps = {"Bike Stations": bikeStations};
+    var overlayMaps = {"Earthquakes": bikeStations};
     
     // Create the map object with options
     var myMap = L.map("map", {
