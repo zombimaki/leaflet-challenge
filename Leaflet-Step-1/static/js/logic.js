@@ -1,70 +1,91 @@
-function createMap(bikeStations) {
+// url of earthquake data
+var quakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 
-    // Create the tile layer that will be the background of our map
-      var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-        attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-        tileSize: 512,
-        maxZoom: 18,
-        zoomOffset: -1,
-        id: "mapbox/streets-v11",
-        accessToken: API_KEY
-      });
-    
+ // Create and center map
+ var myMap = L.map("map", {
+  center: [45.52, -122.67],
+  zoom: 3
+});
+
+// set streetmap layer
+streetLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/streets-v11",
+    accessToken: API_KEY
+  });
   
-    // Create a baseMaps object to hold the lightmap layer
-    var baseMaps = {"Street Map": lightmap};
-  
-    // Create an overlayMaps object to hold the bikeStations layer
-    var overlayMaps = {"Earthquakes": bikeStations};
-    
-    // Create the map object with options
-    var myMap = L.map("map", {
-      center: [45.52, -122.67],
-      zoom: 3,
-      layers: [lightmap, bikeStations]
-    });
-  
-    // Create a layer control, pass in the baseMaps and overlayMaps. Add the layer control to the map
-    L.control.layers(baseMaps, overlayMaps, {
-      collapsed: false
-    }).addTo(myMap);
+// add streetlayer to map
+streetLayer.addTo(myMap);
+
+
+//  GET color radius call to the query URL
+d3.json(quakeURL, function(data) {
+
+  // set radiuss from magnitude
+  function quakeRadius(magnitude) {
+    if (magnitude === 0) {
+      return 1;
+    }
+
+    return magnitude * 5;
+  }
+
+  function getStyle(feature) {
+    return {
+      opacity: 1,
+      fillOpacity: 1,
+      fillColor: getColor(feature.geometry.coordinates[2]),
+      color: "#000000",
+      radius: quakeRadius(feature.properties.mag),
+      stroke: true,
+      weight: 0.5
+    };
   }
   
+  // set different color from magnitude
+    function getColor(depth) {
 
-  // Create the createMarkers function
-function createMarkers(response) {
+      var color = (depth > 100) ? ("#EE0000") : ((depth > 80) ? ("#FF6333") : ((depth > 60) ? ("#FFA500") : ((depth > 40) ? ("#FFCC11"):  ((depth > 20) ? ("#FFEE00"):"#ABCD00"))))
+     
+      return color;
 
-  // Pull the "stations" property off of response.data
-  var quakes = response.features;
+   // }
+  }
+  
+    // create layer of quak locations
+    quakeLayer = L.geoJson(data, {
 
-  // Initialize an array to hold bike markers
-  var bikeMarkers = [];
-
-  // // Loop through the stations array
-  for (var index = 0; index < quakes.length; index++) {
+      pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng);
+      },
+      style: getStyle,
+      onEachFeature: function(feature, layer) {
+        layer.bindPopup("Place: " + feature.properties.place+ "<br>Magnitude: " + feature.properties.mag + "<br>Depth: " + feature.geometry.coordinates[2]);
+      }
+    });
     
-  //   // For each station, create a marker and bind a popup with the station's name    
-    var quake = quakes[index];
+    quakeLayer.addTo(myMap);
+  
+    // create legend object 
+    var legend = L.control({position: 'bottomright'});
 
-    var geometry = quake['geometry']
+    legend.onAdd = function(myMap) {
+      var div = L.DomUtil.create("div", "info legend"),
+      grades = [0, 20, 40, 60, 80, 100],
+      labels = [];
 
+  // Create legend
+  for (var i = 0; i < grades.length; i++) {
+      div.innerHTML +=
+          '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+          grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+  }
+  return div;
+  };
 
-    var coordinates = geometry['coordinates']
+  legend.addTo(myMap);
 
-   
-
-    var bikeMarker = L.marker([coordinates[1], coordinates[0]])
-        .bindPopup("<h3>" + coordinates[2] + "</h3>");
-
-    //console.log(bikeMarker)
-  //   // Add the marker to the bikeMarkers array
-     bikeMarkers.push(bikeMarker);
-     console.log(bikeMarkers) 
-}
-
-  // Create a layer group made from the bike markers array, pass it into the createMap function
-createMap(L.layerGroup(bikeMarkers));
-
-}
-
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", createMarkers);
+  });
