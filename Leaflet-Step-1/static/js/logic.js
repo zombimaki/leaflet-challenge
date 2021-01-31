@@ -16,31 +16,12 @@ d3.json(quakeURL, function(data) {
   createMap(quakeData);
 });
 
-function createMap(quakeData) {
-  // set streetmap layer
-  streetLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
-      attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
-      tileSize: 512,
-      maxZoom: 18,
-      zoomOffset: -1,
-      id: "mapbox/streets-v11",
-      accessToken: API_KEY
-    });
-    
-  // add the streetlayer to map
-  streetLayer.addTo(myMap);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
   //  plot the earthquake data from the quakeURL geojson data
   ///////////////////////////////////////////////////////////////////////////////////////////
 
+function createMap(quakeData) { 
     
-    // set quake radius based on the quake magnitude
-    function quakeRadius(magnitude) {
-      radius = ((magnitude === 0) ? (1) : magnitude * 5)
-      return radius;
-    }
-
     // function returns the stlye for the markers
     function getStyle(feature) {
 
@@ -66,10 +47,15 @@ function createMap(quakeData) {
       
         return color;
     }
-      ///////////////////////////////////////////////////////////////////////////////////////////
-      // create layer of quake location layer latlng
-      ///////////////////////////////////////////////////////////////////////////////////////////
+      
 
+      // set quake radius based on the quake magnitude
+      function quakeRadius(magnitude) {
+        radius = ((magnitude === 0) ? (1) : magnitude * 5)
+        return radius;
+    }
+
+      // create layer of quake locations
       quakeLayer = L.geoJson(quakeData, {
 
         pointToLayer: function(feature, location) {
@@ -81,9 +67,18 @@ function createMap(quakeData) {
           layer.bindPopup("Place: " + feature.properties.place+ "<br>Magnitude: " + feature.properties.mag + "<br>Depth: " + feature.geometry.coordinates[2]);
         }
 
-      });
+      }).addTo(myMap);
       
-      quakeLayer.addTo(myMap);
+
+      // set streetmap layer
+      streetLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+        attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+        tileSize: 512,
+        maxZoom: 18,
+        zoomOffset: -1,
+        id: "mapbox/streets-v11",
+        accessToken: API_KEY
+      }).addTo(myMap);
 
       ///////////////////////////////////////////////////////////////////////////////////////////
       // create legend 
