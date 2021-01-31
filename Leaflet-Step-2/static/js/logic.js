@@ -55,7 +55,7 @@ function createMap(quakeData,tetonicData) {
       }
   });
 
-  // create streetmap layer
+  // create street map layer
   var streetLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
@@ -64,6 +64,31 @@ function createMap(quakeData,tetonicData) {
     id: "mapbox/streets-v11",
     accessToken: API_KEY
   });  
+
+  // create dark map layer
+  var darkLayer = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "dark-v10",
+  accessToken: API_KEY
+  });
+
+  // create light map layer
+  var lightLayer = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "light-v10",
+  accessToken: API_KEY
+  });
+
+  // create satellite map layer
+  var satelliteLayer = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "satellite-v9",
+  accessToken: API_KEY
+  });
+
 
   // generate the tetonic plate polyline
   function makePolyline(feature, layer){
@@ -86,7 +111,8 @@ function createMap(quakeData,tetonicData) {
   // create base map variable
   var baseMaps = {
     "Street Map": streetLayer,
-    // "Dark Map": darkmap
+    "Dark Map": darkLayer, 
+    "Light Map": lightLayer, "Satellite Layer" : satelliteLayer
   };
 
   ///////////////////////////////////////////////////////////////////////////////////////////
