@@ -13,19 +13,20 @@ html {
 
 /* set legend format */
 
-.info {
+.box {
   padding: 6px 8px;
-  font: 10px/12px Arial, Helvetica, sans-serif;
+  font: 10px/12px Arial, sans-serif;
   background: white;
   background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 .legend {
   line-height: 24px;
   color: #000;
 }
+
 .legend i {
   width: 20px;
   height: 20px;

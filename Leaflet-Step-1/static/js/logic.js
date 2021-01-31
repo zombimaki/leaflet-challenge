@@ -1,3 +1,7 @@
+///////////////////////////////////////////////////////////////////////////////////////////
+// All-Day Earthquake Map
+///////////////////////////////////////////////////////////////////////////////////////////
+
 // url of earthquake data
 var quakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 
@@ -17,49 +21,53 @@ streetLayer = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
     accessToken: API_KEY
   });
   
-// add streetlayer to map
+// add the streetlayer to map
 streetLayer.addTo(myMap);
 
-
-//  GET color radius call to the query URL
+///////////////////////////////////////////////////////////////////////////////////////////
+//  plot the earthquake data from the quakeURL geojson data
+///////////////////////////////////////////////////////////////////////////////////////////
 d3.json(quakeURL, function(data) {
 
-  // set radiuss from magnitude
+  // set quake radius based on the quake magnitude
   function quakeRadius(magnitude) {
-    if (magnitude === 0) {
-      return 1;
-    }
-
-    return magnitude * 5;
+    radius = ((magnitude === 0) ? (1) : magnitude * 5)
+    return radius;
   }
 
+  // function returns the stlye for the markers
   function getStyle(feature) {
-    return {
-      opacity: 1,
-      fillOpacity: 1,
-      fillColor: getColor(feature.geometry.coordinates[2]),
-      color: "#000000",
-      radius: quakeRadius(feature.properties.mag),
+
+    markerStyle = {
+      opacity: 0.75,
+      fillOpacity: 1,      
+      color: "black",
       stroke: true,
-      weight: 0.5
+      weight: 0.75,
+      // set fillcolor by passing quake depth to getColor
+      fillColor: getColor(feature.geometry.coordinates[2]),
+      // set radius by passing quake magnitude to quakeRadius
+      radius: quakeRadius(feature.properties.mag),
+
     };
+    return markerStyle
   }
   
-  // set different color from magnitude
+  // getColor function returns colors based on quake depth
     function getColor(depth) {
 
-      var color = (depth > 100) ? ("#EE0000") : ((depth > 80) ? ("#FF6333") : ((depth > 60) ? ("#FFA500") : ((depth > 40) ? ("#FFCC11"):  ((depth > 20) ? ("#FFEE00"):"#ABCD00"))))
+      var color = ((depth > 100) ? ("#EE0000") : ((depth > 80) ? ("#FF6333") : ((depth > 60) ? ("#FFA500") : ((depth > 40) ? ("#FFCC11"):  ((depth > 20) ? ("#FFEE00"):"#ABCD00")))))
      
       return color;
-
-   // }
   }
-  
-    // create layer of quak locations
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // create layer of quake location layer latlng
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     quakeLayer = L.geoJson(data, {
 
-      pointToLayer: function(feature, latlng) {
-        return L.circleMarker(latlng);
+      pointToLayer: function(feature, location) {
+        return L.circleMarker(location);
       },
       style: getStyle,
       onEachFeature: function(feature, layer) {
@@ -68,24 +76,25 @@ d3.json(quakeURL, function(data) {
     });
     
     quakeLayer.addTo(myMap);
-  
-    // create legend object 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // create legend 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     var legend = L.control({position: 'bottomright'});
 
     legend.onAdd = function(myMap) {
-      var div = L.DomUtil.create("div", "info legend"),
-      grades = [0, 20, 40, 60, 80, 100],
-      labels = [];
+      var legend_div = L.DomUtil.create("div", "legend box"),
+      buckets = [0, 20, 40, 60, 80, 100];
 
-  // Create legend
-  for (var i = 0; i < grades.length; i++) {
-      div.innerHTML +=
-          '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-          grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-  }
-  return div;
-  };
+      // legend scale and text
+      for (var i = 0; i < buckets.length; i++) {
+        legend_div.innerHTML +=
+              '<i style="background:' + getColor(buckets[i] + 1) + '"></i> ' + buckets[i] + (buckets[i + 1] ? '&ndash;' + buckets[i + 1] + '<br>' : '+');
+      }
+      return legend_div;
+      };
 
-  legend.addTo(myMap);
+      legend.addTo(myMap);
 
   });
