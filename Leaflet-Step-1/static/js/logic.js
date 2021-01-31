@@ -4,7 +4,6 @@
 
 // url of earthquake data
 var quakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-var tetonicURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
  // Create and center map
  var myMap = L.map("map", {

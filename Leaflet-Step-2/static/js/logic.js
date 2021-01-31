@@ -2,7 +2,7 @@
 // All-Day Earthquake Map
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-// url of earthquake data
+// url of earthquake and tetonic plate data
 var quakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 var tetonicURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
