@@ -28,6 +28,8 @@ streetLayer.addTo(myMap);
 //  plot the earthquake data from the quakeURL geojson data
 ///////////////////////////////////////////////////////////////////////////////////////////
 d3.json(quakeURL, function(data) {
+  
+  
 
   // set quake radius based on the quake magnitude
   function quakeRadius(magnitude) {
@@ -56,7 +58,7 @@ d3.json(quakeURL, function(data) {
   // getColor function returns colors based on quake depth
     function getColor(depth) {
 
-      var color = ((depth > 100) ? ("#EE0000") : ((depth > 80) ? ("#FF6333") : ((depth > 60) ? ("#FFA500") : ((depth > 40) ? ("#FFCC11"):  ((depth > 20) ? ("#FFEE00"):"#ABCD00")))))
+      var color = ((depth >= 100) ? ("#EE0000") : ((depth >= 80) ? ("#FF6333") : ((depth >= 60) ? ("#FFA500") : ((depth >= 40) ? ("#FFCC11"):  ((depth >= 20) ? ("#FFEE00"):"#ABCD00")))))
      
       return color;
   }
@@ -70,9 +72,11 @@ d3.json(quakeURL, function(data) {
         return L.circleMarker(location);
       },
       style: getStyle,
+
       onEachFeature: function(feature, layer) {
         layer.bindPopup("Place: " + feature.properties.place+ "<br>Magnitude: " + feature.properties.mag + "<br>Depth: " + feature.geometry.coordinates[2]);
       }
+
     });
     
     quakeLayer.addTo(myMap);
@@ -85,12 +89,13 @@ d3.json(quakeURL, function(data) {
 
     legend.onAdd = function(myMap) {
       var legend_div = L.DomUtil.create("div", "legend box"),
-      buckets = [0, 20, 40, 60, 80, 100];
+      buckets = [0, 20, 40, 60, 80, 100];     
 
       // legend scale and text
       for (var i = 0; i < buckets.length; i++) {
         legend_div.innerHTML +=
-              '<i style="background:' + getColor(buckets[i] + 1) + '"></i> ' + buckets[i] + (buckets[i + 1] ? '&ndash;' + buckets[i + 1] + '<br>' : '+');
+          '<i style="background:' + getColor(buckets[i] + 1) + '"></i> ' + buckets[i] + (buckets[i + 1] ? '&ndash;' + buckets[i + 1] + '<br>' : '+');
+
       }
       return legend_div;
       };
