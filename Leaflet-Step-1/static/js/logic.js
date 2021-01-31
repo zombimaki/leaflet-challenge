@@ -7,8 +7,8 @@ var quakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_da
 
  // Create and center map
  var myMap = L.map("map", {
-  center: [45.52, -122.67],
-  zoom: 3
+  center: [19, -6],
+  zoom: 1.5
 });
 
 d3.json(quakeURL, function(data) {
